@@ -1,0 +1,139 @@
+<div class="container">
+  <div class="card p-3 mt-3">
+    <h3 class="text-center">Danh sách nhân viên</h3>
+    <div class="row">
+      <div class="col-1 p-3">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Add
+        </button>
+      </div>
+      <div class="col-3 p-3">
+        <button (click)="exportToExcel()" class="btn btn-success" type="button">Download template</button>
+      </div>
+    </div>
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Mã nhân viên</th>
+          <th>Tên nhân viên</th>
+          <th>Email FPT</th>
+          <th>Email FE</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of staffs; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.staffCode }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.accountFpt }}</td>
+          <td>{{ item.accountFe }}</td>
+          <td>{{ item.status == 1 ? "Active" : "Inactive" }}</td>
+          <td>
+            <a (click)="edit(item)" data-bs-toggle="modal" data-bs-target="#exampleModal1" title="Edit"><i class="far fa-edit text-warning"></i></a>&nbsp;&nbsp;
+            <a (click)="changeStatus(item)" *ngIf="item.status == 1" title="Disable"><i class="fas fa-ban text-danger"></i></a>
+            <a (click)="changeStatus(item)" *ngIf="item.status == 0" title="Enable"><i class="fas fa-check-circle text-success"></i></a>
+            &nbsp;&nbsp;<a href="/staffs/{{item.id}}" title="View"><i class="fas fa-eye text-info"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- Modal Add Staff -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm thông tin nhân viên</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+      </div>
+      <form (ngSubmit)="onSubmit()" #staffForm="ngForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="staffCode">Mã nhân viên</label>
+            <input type="text" class="form-control" id="staffCode" [(ngModel)]="staff.staffCode" name="staffCode" (ngModelChange)="check_StaffCode(); " required/>
+            <div class="text-danger" *ngIf="checkStaffCode">* Mã nhân viên không hợp lệ</div>
+            <div class="text-danger" *ngIf="checkStaffCodeDuplicate">* Mã nhân viên đã tồn tại</div>
+          </div>
+          <div class="form-group">
+            <label for="name">Tên nhân viên</label>
+            <input type="text" class="form-control" id="name" [(ngModel)]="staff.name" name="name" (ngModelChange)="check_Name(); " required/>
+            <div class="text-danger" *ngIf="checkName">* Tên nhân viên không hợp lệ</div>
+          </div>
+          <div class="form-group">
+            <label for="accountFpt">Email FPT</label>
+            <input type="email" class="form-control" id="accountFpt" [(ngModel)]="staff.accountFpt" name="accountFpt" (ngModelChange)="check_AccountFpt(); " required/>
+            <div class="text-danger" *ngIf="checkAccountFpt">* Email FPT không hợp lệ</div>
+            <div class="text-danger" *ngIf="checkAccountFptDuplicate">* Email đã tồn tại</div>
+          </div>
+          <div class="form-group">
+            <label for="accountFe">Email FE</label>
+            <input type="email" class="form-control" id="accountFe" [(ngModel)]="staff.accountFe" name="accountFe" (ngModelChange)="check_AccountFe(); " required/>
+            <div class="text-danger" *ngIf="checkAccountFe">* Email Fe không hợp lệ</div>
+            <div class="text-danger" *ngIf="checkAccountFeDuplicate">* Email đã tồn tại</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="close()">Close</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!checkValidForm">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add Staff -->
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel1">Cập nhật thông tin nhân viên</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="close()"></button>
+      </div>
+      <form (ngSubmit)="onSubmitUpdate()" #staffForm="ngForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="">Mã nhân viên</label>
+            <input type="text" class="form-control" id="maNV" [(ngModel)]="staffUpdate.staffCode" name="staffCode" required readonly/>
+          </div>
+          <div class="form-group">
+            <label for="">Tên nhân viên</label>
+            <input type="text" class="form-control" id="tenNV" [(ngModel)]="staffUpdate.name" name="name" (ngModelChange)="check_NameUpdate(); " required/>
+            <div class="text-danger" *ngIf="checkNameUpdate">* Tên nhân viên không hợp lệ</div>
+          </div>
+          <div class="form-group">
+            <label for="">Email FPT</label>
+            <input type="email" class="form-control" id="mailFpt" [(ngModel)]="staffUpdate.accountFpt" name="accountFpt" (ngModelChange)="check_AccountFptUpdate(); " required/>
+            <div class="text-danger" *ngIf="checkAccountFptUpdate">* Email FPT không hợp lệ</div>
+            <div class="text-danger" *ngIf="checkAccountFptUpdateDuplicate">* Email đã tồn tại</div>
+          </div>
+          <div class="form-group">
+            <label for="">Email FE</label>
+            <input type="email" class="form-control" id="mailFe" [(ngModel)]="staffUpdate.accountFe" name="accountFe" (ngModelChange)="check_AccountFeUpdate(); " required/>
+            <div class="text-danger" *ngIf="checkAccountFeUpdate">* Email Fe không hợp lệ</div>
+            <div class="text-danger" *ngIf="checkAccountFeUpdateDuplicate">* Email đã tồn tại</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="close()">Close</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!checkValidFormUpdate">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Success Alert -->
+<div *ngIf="isSuccess" class="custom-alert alert alert-success alert-dismissible" role="alert">
+  Thêm nhân viên thành công!
+</div>
+
+<div *ngIf="isUpdated" class="custom-alert alert alert-success alert-dismissible" role="alert">
+  Cập nhật nhân viên thành công!
+</div>
+
+
+

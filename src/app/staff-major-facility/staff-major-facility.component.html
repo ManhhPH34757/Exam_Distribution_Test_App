@@ -1,0 +1,97 @@
+<div class="container">
+  <a href="/staffs" class="btn btn-success mt-3">Back</a>
+  <div class="card p-3 mt-3">
+    <h3>Thông tin nhân viên</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Mã nhân viên</th>
+          <th>Tên nhân viên</th>
+          <th>Email FPT</th>
+          <th>Email Fe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{staff.staffCode}}</td>
+          <td>{{staff.name}}</td>
+          <td>{{staff.accountFpt}}</td>
+          <td>{{staff.accountFe}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-success mt-3">Add Major</a>
+
+  <div class="card p-3 mt-3">
+    <h3>Danh sách bộ môn, chuyên ngành theo cơ sở</h3>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Cơ sở</th>
+          <th>Bộ môn</th>
+          <th>Chuyên ngành</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of staffMajorFacilitys; index as i">
+          <td>{{i + 1}}</td>
+          <td>{{item.idMajorFacility.idDepartmentFacility.idFacility.name}}</td>
+          <td>{{item.idMajorFacility.idDepartmentFacility.idDepartment.name}}</td>
+          <td>{{item.idMajorFacility.idMajor.name}}</td>
+          <td>
+            <a (click)="remove(item)" title="Delete"><i class="fas fa-trash-alt"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<!-- Modal Add Staff -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel1">Cập nhật thông tin nhân viên</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form #staffForm="ngForm" (ngSubmit)="submit(staffForm)">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="facility">Cơ sở</label>
+                <select class="form-control" name="facility" id="facility" ngModel (change)="changeFacilities()">
+                  <option value="" hidden>--Chọn cơ sở</option>
+                  <option *ngFor="let item of facilities" [ngValue]="item">{{item.name}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="department">Bộ môn</label>
+                <select class="form-control" name="department" id="department" ngModel>
+                  <option value="" hidden>--Chọn bộ môn</option>
+                  <option *ngFor="let item of departments" [ngValue]="item">{{item.name}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="major">Chuyên ngành</label>
+                <select class="form-control" name="major" id="major" ngModel>
+                  <option value="" hidden>--Chọn chuyên ngành</option>
+                  <option *ngFor="let item of majors" [ngValue]="item">{{item.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+        </div>
+    </form>
+
+    </div>
+  </div>
+</div>
